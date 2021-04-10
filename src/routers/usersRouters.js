@@ -15,6 +15,14 @@ router.post("/users", async (req, res) => {
   }
 });
 
+//Login user
+router.post("/users/login", async (req, res) => {
+  const { body } = req;
+  try {
+    const user = await User.findByCredentials(body.email, body.password);
+  } catch (err) {}
+});
+
 // Get all users
 router.get("/users", async (req, res) => {
   try {
@@ -46,14 +54,23 @@ router.patch("/users/:id", async (req, res) => {
   // Check is valid update
   const updates = Object.keys(body);
   const allowedUpdate = ["name", "lastName", "email", "age", "password"];
-  const isValidOperation = updates.every((update) => allowedUpdate.includes(update));
+  const isValidOperation = updates.every((update) =>
+    allowedUpdate.includes(update)
+  );
   if (!isValidOperation) {
     return res.status(400).send({ Error: "Invalid update!!!" });
   }
   try {
+<<<<<<< Updated upstream
     const user = await User.findById(params.id);
     updates.forEach((update) => (user[update] = body[update]));
     await user.save();
+=======
+    const user = await User.findByIdAndUpdate(params.id, body, {
+      new: true,
+      runValidators: true,
+    });
+>>>>>>> Stashed changes
 
     if (!user) {
       return res.status(404).send();
