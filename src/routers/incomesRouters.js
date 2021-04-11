@@ -51,7 +51,9 @@ router.patch("/incomes/:id", async (req, res) => {
     return res.status(400).send({ Error: "Invalid update!!" });
   }
   try {
-    const income = await Incomes.findByIdAndUpdate(params.id, body, { new: true, runValidators: true });
+    const income = await Incomes.findById(params.id);
+    updates.forEach((update) => (income[update] = body[update]));
+    income.save();
     if (!income) {
       return res.status(404).send();
     }
