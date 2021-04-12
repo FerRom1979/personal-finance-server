@@ -31,6 +31,11 @@ const Incomes = mongoose.model("incomes", {
   IncomePermanent: {
     type: Boolean,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
 });
 
 module.exports = Incomes;
