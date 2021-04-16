@@ -1,5 +1,6 @@
 const express = require("express");
 const router = new express.Router();
+const multer = require("multer");
 
 // Middleware
 const auth = require("../middleware/auth");
@@ -111,6 +112,23 @@ router.delete("/users/me", auth, async (req, res) => {
   } catch (err) {
     res.status(500).send(err);
   }
+});
+
+// File Uploads
+const upload = multer({
+  dest: "avatars",
+  limits: {
+    fileSize: 1000000,
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpeg|png|jpg)$/)) {
+      return cb(new Error("should fail"));
+    }
+    cb(undefined, false);
+  },
+});
+router.post("/users/me/avatar", upload.single("avatar"), (req, res) => {
+  res.send();
 });
 
 module.exports = router;

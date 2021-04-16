@@ -27,15 +27,3 @@ app.listen(port, () => {
 
 const Incomes = require("./models/IncomesModels");
 const User = require("./models/usersModels");
-
-const main = async () => {
-  /* const income = await Incomes.findById("607974aec1f82517a69224c4");
-  await income.populate("owner").execPopulate();
-  console.log(income.owner); */
-
-  const user = await User.findById("60789e1eb328e7bc99486118");
-  await user.populate("incomes").execPopulate();
-  console.log(user.incomes);
-};
-
-main();
