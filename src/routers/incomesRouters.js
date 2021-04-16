@@ -20,11 +20,34 @@ router.post("/incomes", auth, async (req, res) => {
   }
 });
 
-//GET all Incomes
+// GET all Incomes /incomes?incomePermanent=true
+// GET /incomes?limit=10&skip=20
+// GET /incomes?sortBy=createAt:desc or asc
 router.get("/incomes", auth, async (req, res) => {
+  const match = {};
+  const sort = {};
+
+  if (req.query.incomePermanent) {
+    match.IncomePermanent = req.query.incomePermanent === "true";
+  }
+  if (req.query.sortBy) {
+    const parts = req.query.sortBy.split(":");
+    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
+  }
   try {
-    const incomes = await Incomes.find({ owner: req.user._id });
-    return res.status(200).send(incomes);
+    // const incomes = await Incomes.find({ owner: req.user._id });
+    await req.user
+      .populate({
+        path: "incomes",
+        match,
+        options: {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip),
+          sort,
+        },
+      })
+      .execPopulate();
+    res.send(req.user.incomes);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -34,11 +57,10 @@ router.get("/incomes", auth, async (req, res) => {
 router.get("/incomes/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
-    // const income = await Incomes.findOne({ _id, owner: req.user._id });
-    await req.user.populate("incomes").execPopulate();
+    const income = await Incomes.findOne({ _id, owner: req.user._id });
+    /* await req.user.populate("incomes").execPopulate(); */
     if (!income) {
-      // return res.status(404).send();
-      return res.send(req.user.incomes);
+      return res.status(404).send();
     }
     res.send(income);
   } catch (err) {
