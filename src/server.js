@@ -7,7 +7,7 @@ const usersRouters = require("./routers/usersRouters");
 const incomesRouters = require("./routers/incomesRouters");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use((req, res, next) => {
   console.log(req.method, req.path);
