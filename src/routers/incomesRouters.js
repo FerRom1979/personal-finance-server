@@ -58,7 +58,6 @@ router.get("/incomes/:id", auth, async (req, res) => {
   const _id = req.params.id;
   try {
     const income = await Incomes.findOne({ _id, owner: req.user._id });
-    /* await req.user.populate("incomes").execPopulate(); */
     if (!income) {
       return res.status(404).send();
     }
