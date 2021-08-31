@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const Incomes = require("./IncomesModels");
+const mongoose = require("mongoose")
+const validator = require("validator")
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+const Incomes = require("./IncomesModels")
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
       lowerCase: true,
       validate(value) {
         if (!validator.isEmail(value)) {
-          throw new Error("Email is invalid");
+          throw new Error("Email is invalid")
         }
       },
     },
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       validate(value) {
         if (value < 0) {
-          throw new Error("Age must be a positive number");
+          throw new Error("Age must be a positive number")
         }
       },
     },
@@ -45,9 +45,12 @@ const userSchema = new mongoose.Schema(
       minLength: 7,
       validate(value) {
         if (value.toLowerCase().includes("password")) {
-          throw new Error("The word password is not allowed");
+          throw new Error("The word password is not allowed")
         }
       },
+    },
+    avatar: {
+      type: Buffer,
     },
     tokens: [
       {
@@ -57,75 +60,71 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    avatar: {
-      type: Buffer,
-    },
   },
   {
     timestamps: true,
   }
-);
+)
 
 // Get Incomes the user
 userSchema.virtual("incomes", {
   ref: "incomes",
   localField: "_id",
   foreignField: "owner",
-});
+})
 
 // Hide user data
 userSchema.methods.toJSON = function () {
-  const user = this;
-  const userObject = user.toObject();
+  const user = this
+  const userObject = user.toObject()
 
-  delete userObject.password;
-  delete userObject.tokens;
-  delete userObject.avatar;
+  delete userObject.password
+  delete userObject.tokens
 
-  return userObject;
-};
+  return userObject
+}
 
 // Get token
 userSchema.methods.generateAuthToken = async function () {
-  const user = this;
-  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWK_SECRET);
+  const user = this
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWK_SECRET)
 
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
-  return token;
-};
+  user.tokens = user.tokens.concat({ token })
+  await user.save()
+  return token
+}
 
 // Verify email and password
 userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email })
 
   if (!user) {
-    throw new Error("Unable to login");
+    throw new Error("Unable to login")
   }
-  const isMatch = await bcrypt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password)
   if (!isMatch) {
-    throw new Error("Unable to login");
+    throw new Error("Unable to login")
   }
 
-  return user;
-};
+  return user
+}
 
 // Hash the plain text password before saving
 userSchema.pre("save", async function (next) {
-  const user = this;
+  const user = this
   if (user.isModified("password")) {
-    user.password = await bcrypt.hash(user.password, 8);
+    user.password = await bcrypt.hash(user.password, 8)
   }
-  next();
-});
+  next()
+})
 
 // Delete user incomes when user is removed
 userSchema.pre("remove", async function (next) {
-  const user = this;
-  await Incomes.deleteMany({ owner: user._id });
-  next();
-});
+  const user = this
+  await Incomes.deleteMany({ owner: user._id })
+  next()
+})
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema)
 
-module.exports = User;
+module.exports = User

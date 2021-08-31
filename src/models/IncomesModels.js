@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const usersModels = require("./usersModels");
+const mongoose = require("mongoose")
+const validator = require("validator")
+const usersModels = require("./usersModels")
+const mongoosePaginate = require("mongoose-paginate-v2")
 
 const incomesSchema = new mongoose.Schema(
   {
@@ -26,7 +27,7 @@ const incomesSchema = new mongoose.Schema(
       default: 0,
       validate(value) {
         if (value < 0) {
-          throw new Error("The Income must be a positive number");
+          throw new Error("The Income must be a positive number")
         }
       },
     },
@@ -42,8 +43,10 @@ const incomesSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
-);
+)
 
-const Incomes = mongoose.model("incomes", incomesSchema);
+incomesSchema.plugin(mongoosePaginate)
 
-module.exports = Incomes;
+const Incomes = mongoose.model("incomes", incomesSchema)
+
+module.exports = Incomes
