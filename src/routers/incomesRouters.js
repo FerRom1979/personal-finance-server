@@ -27,7 +27,7 @@ router.get("/incomes", auth, getAllIncomes)
 router.get("/incomes/counter", auth, counterIncomes)
 
 // filter
-router.get("/incomes/search", auth, filterIncomes)
+router.get("/incomes/filter", auth, filterIncomes)
 
 // get income per page
 router.get("/incomes/page", auth, paginationIncomes)

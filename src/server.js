@@ -9,7 +9,8 @@ const usersRouters = require("./routers/usersRouters")
 const incomesRouters = require("./routers/incomesRouters")
 
 const app = express()
-const port = process.env.PORT
+
+app.set("port", process.env.PORT || 3001)
 
 app.use((req, res, next) => {
   console.log(req.method, req.path)
@@ -24,6 +25,6 @@ app.use(cors())
 app.use(usersRouters)
 app.use(incomesRouters)
 
-app.listen(port, () => {
-  console.log(`Server in port ${port}`)
+app.listen(app.get("port"), () => {
+  console.log(`Server in port ${app.get("port")}`)
 })
