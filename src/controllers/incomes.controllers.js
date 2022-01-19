@@ -53,10 +53,10 @@ const counterIncomes = async (req, res) => {
 }
 
 const filterIncomes = async (req, res) => {
-  const { category, limit = 5 } = req.query
+  const { category } = req.query
   const incomes = await Incomes.find({
     category,
-  }).limit(limit)
+  })
   try {
     res.status(200).send(incomes)
   } catch (err) {
